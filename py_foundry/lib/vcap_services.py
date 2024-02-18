@@ -1,8 +1,7 @@
 import json
 
 from cf_utils import ServiceKey
-from env_management import get_cf_credentials, get_target_from_env
-from log_config import logger
+from lib.log_config import logger
 
 
 def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, service_key_name: str) -> dict:
@@ -36,12 +35,18 @@ def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, 
         }
 
 
-def get_vcap_services(env_name: str = 'dev', output_file: str = 'hana-env-credentials-{env_name}.env') -> None:
+def get_vcap_services(org: str,
+                      space: str,
+                      username: str,
+                      password: str,
+                      env_name: str = 'dev',
+                      output_file: str = 'hana-env-credentials-{env_name}.env'
+                      ) -> None:
     logger.info('Fetching env file to deploy objects in SAP BAS')
 
     tables_service_name = f'{env_name}-di-hana-hdi'
 
-    sk = ServiceKey(*get_target_from_env(env_name), *get_cf_credentials(), tables_service_name)
+    sk = ServiceKey(org, space, username, password, tables_service_name)
     credentials = sk.fetch_service_key_credentials()
 
     vcap = get_vcap(credentials, tables_service_name, sk.org, sk.space, sk.service_key_name)

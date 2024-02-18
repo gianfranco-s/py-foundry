@@ -1,64 +1,13 @@
 import json
 import os
-import subprocess
 from typing import Optional
 
-from log_config import logger
+from lib.log_config import cf_logger
+from lib.methods import run_command
 
 
-def run_command(command: str) -> str:
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, text=True)
-    return result.stdout
-
-
-class CloudFoundryLogin:
-    def __init__(self,
-                 org: str,
-                 space: str,
-                 username: str,
-                 password: str,
-                 verbose: bool = False,
-                 api_endpoint: str = 'https://api.cf.us10.hana.ondemand.com',
-                 ) -> None:
-
-        self.org = org
-        self.space = space
-
-        self._user = username
-        self._password = password
-        self._verbose = verbose
-
-        self.__login()
-        self.__set_target()
-        self.__set_api_endpoint(api_endpoint)
-
-    def __set_target(self) -> None:
-        """ Target can be set after initialization. """
-        stdout = run_command(f'cf target -o {self.org} -s {self.space}')
-
-        if self._verbose:
-            logger.debug(f'Setting target:\n{stdout}')
-
-    def __login(self) -> None:
-        run_command(f'cf auth {self._user} {self._password}')
-
-    def __set_api_endpoint(self, new_endpoint: str) -> None:
-        self.api_endpoint = new_endpoint
-        stdout = run_command(f'cf api {self.api_endpoint}')
-
-        if self._verbose:
-            logger.debug(f'Setting api endpoint:\n{stdout}')
-
-
-class CloudFoundrySessionManager(CloudFoundryLogin):
-    def __init__(self,
-                 org: str,
-                 space: str,
-                 username: str,
-                 password: str,
-                 verbose: bool = False,
-                 ) -> None:
-        super().__init__(org, space, username, password, verbose)
+class CloudFoundrySessionManager:
+    def __init__(self) -> None:
         self._services = None
         self._apps = None
 
@@ -137,7 +86,7 @@ class CreateService:
         self.json_params = json_params
 
     def create_service_command(self) -> str:
-        logger.info(f'Creating service {self.service_name}')
+        cf_logger.info(f'Creating service {self.service_name}')
 
         c = f"cf create-service {self.service_type} {self.service_plan} {self.service_name}"
 
@@ -156,7 +105,7 @@ class CreateUserProvidedService:
         self.json_params = json_params
 
     def create_service_command(self) -> str:
-        logger.info(f'Creating service {self.service_name}')
+        cf_logger.info(f'Creating service {self.service_name}')
 
         c = f"cf create-user-provided-service {self.service_name}"
 
@@ -240,5 +189,5 @@ class PushAppRouter(PushAppWithManifest):
         self.__create_app_descriptor()
         c = self._create_app_command()
         if verbose:
-            logger.info(c)
+            cf_logger.info(c)
         self.__remove_app_descriptor()

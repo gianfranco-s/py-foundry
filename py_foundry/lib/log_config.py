@@ -4,9 +4,9 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='[%(asctime)s] %(levelname)s: %(message)s',
     handlers=[
-        logging.FileHandler('deployments.log'),
+        # logging.FileHandler('deployments.log'),
         logging.StreamHandler()
     ]
 )
 
-logger = logging.getLogger(__name__)
+cf_logger = logging.getLogger(__name__)
