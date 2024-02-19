@@ -3,7 +3,7 @@ import subprocess
 
 from typing import Tuple
 
-def run_command(command: str, verbose: bool = False, no_call: bool = True) -> str:
+def run_command(command: str, verbose: bool = False, no_call: bool = False) -> str:
     """Run command as subprocess.
     
     Keyword arguments:

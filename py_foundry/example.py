@@ -1,5 +1,5 @@
 from lib.login import CloudFoundryStart
-from lib.session_manager import CloudFoundrySession
+from py_foundry.lib.app_lifecycle import CloudFoundryApp
 from lib.methods import get_cf_credentials
 
 API_ENDPOINT = 'https://api.cf.us10.hana.ondemand.com'
@@ -10,15 +10,11 @@ def main() -> None:
     cf_start = CloudFoundryStart(org, space, *get_cf_credentials(cf_credentials_path), API_ENDPOINT, verbose=True)
     cf_start.start_session()
 
-    session = CloudFoundrySession()
+    app = CloudFoundryApp()
 
-    print(session.apps)
-    print(session.services)
-
-
-    
-
-
+    print(app.show_apps)
+    res = app.set_env('di-aysa-dev', 'test2', 'helloworld')
+    print(res)
 
     
 if __name__ == '__main__':
