@@ -1,5 +1,4 @@
-import pytest
-from py_foundry.lib.login import CloudFoundryLogin, CloudFoundryAuthenticationError
+from py_foundry.lib.login import CloudFoundryStart, CloudFoundryAuthenticationError
 
 
 def mock_run_command(command: str) -> str:
@@ -14,12 +13,12 @@ def mock_run_command(command: str) -> str:
 
 
 def test_login():
-    session = CloudFoundryLogin('my-org', 'my-space', 'user', 'pass', 'https://api.endpoint.com', verbose=True, run=mock_run_command)
+    session = CloudFoundryStart('my-org', 'my-space', 'user', 'pass', 'https://api.endpoint.com', verbose=True, call_cf=mock_run_command)
     res = session.start_session()
     assert res == 'ok'
 
 
 def test_failed_login():
-    session = CloudFoundryLogin('my-org', 'my-space', 'user', 'invalid-pass', 'https://api.endpoint.com')
+    session = CloudFoundryStart('my-org', 'my-space', 'user', 'invalid-pass', 'https://api.endpoint.com')
     res = session.start_session()
     assert res == 'failed'

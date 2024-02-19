@@ -3,10 +3,28 @@ import subprocess
 
 from typing import Tuple
 
-def run_command(command: str) -> str:
+def run_command(command: str, verbose: bool = False, no_call: bool = True) -> str:
+    """Run command as subprocess.
+    
+    Keyword arguments:
+    command -- cf command to run
+    verbose -- Default is False
+    no_call -- used for debugging. Prd should be False
+    Return: result of operation
+    """
+    
+    if no_call:
+        print(command)
+        return '-- no-call --'
+
     if len(command) <= 0:
         raise ValueError('Command cannot be empty')
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, text=True)
+
+    if verbose:
+        print(result.stdout)
+        print(result.stderr)
+
     return result.stdout.rstrip('\n')
 
 
