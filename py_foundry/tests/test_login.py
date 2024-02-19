@@ -6,19 +6,19 @@ def mock_run_command(command: str) -> str:
     if args[1] == 'auth':
         "For `cf auth` tests"
         user = args[2]
-        return 'ok' if user.startswith('valid') else 'failed'
+        return 'OK' if user.startswith('valid') else 'FAILED'
 
     else:
         return 'command ran'
 
 
 def test_login():
-    session = CloudFoundryStart('my-org', 'my-space', 'user', 'pass', 'https://api.endpoint.com', verbose=True, call_cf=mock_run_command)
-    res = session.start_session()
+    cf_start = CloudFoundryStart('my-org', 'my-space', 'valid-user', 'pass', 'https://api.endpoint.com', call_cf=mock_run_command)
+    res = cf_start.start_session()
     assert res == 'ok'
 
 
 def test_failed_login():
-    session = CloudFoundryStart('my-org', 'my-space', 'user', 'invalid-pass', 'https://api.endpoint.com')
-    res = session.start_session()
+    cf_start = CloudFoundryStart('my-org', 'my-space', 'user', 'pass', 'https://api.endpoint.com', call_cf=mock_run_command)
+    res = cf_start.start_session()
     assert res == 'failed'
