@@ -2,10 +2,10 @@ import json
 import os
 from typing import Callable, Optional
 
+from lib.app_lifecycle import CloudFoundryApp
 from lib.log_config import cf_logger
 from lib.methods import run_command
 from lib.service_integration import CloudFoundryService
-
 
 class ServiceKey(CloudFoundryService):
         
@@ -107,26 +107,18 @@ class XSUAAService(CloudFoundryService):
         self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
 
 
-class PushAppWithManifest:
+class PushAppWithManifest(CloudFoundryApp):
     def __init__(self,
                  manifest_path: str,
                  call_cf: Callable[[str, bool], str] = run_command,
                  **kwargs,
                  ) -> None:
+        super().__init__(call_cf=call_cf)
         self.manifest_path = manifest_path
         self.kwargs = kwargs
-        self._call_cf = call_cf
-
-    def _create_app_command(self) -> str:
-        c = f"cf push --manifest {self.manifest_path}"
-        if self.kwargs:
-            for var_name, var_value in self.kwargs.items():
-                c = ' '.join([c, f"\\\n\t--var {var_name}={var_value}"])
-
-        self._call_cf(c)
 
     def push_app(self) -> str:
-        return self._create_app_command()
+        return self.push_with_manifest(self.manifest_path, **self.kwargs)
 
 
 class PushAppRouter(PushAppWithManifest):

@@ -36,10 +36,15 @@ class CloudFoundryApp:
         c = f'cf env {app_name} | sed 1d'
         return self._call_cf(c)
 
-    def push():
-        """ Tentatively implemented with the class PushAppWithManifest
-        Maybe build that class as a child of CloudFoundryApp
-        """
+    def push_with_manifest(self, manifest_path: str, **kwargs) -> str:
+        """Push a new app or sync changes to an existing app. Only mandatory arg is manifest_path"""
+        c = f"cf push --manifest {manifest_path}"
+
+        if kwargs:
+            for var_name, var_value in kwargs.items():
+                c = ' '.join([c, f"\\\n\t--var {var_name}={var_value}"])
+
+        self._call_cf(c) 
 
     def restart(self, app_name: str, strategy: Optional[str], no_wait: bool = False) -> str:
         """Stop all instances of the app, then start them again.
