@@ -22,7 +22,7 @@ class CloudFoundryApp:
         return tuple(item.split()[0] for item in skip_titles_and_last_row)
 
     @property
-    def show_apps(self, refresh: bool = False):
+    def show_apps(self, refresh: bool = False) -> tuple:
         if refresh or self._apps is None:
             self._apps = self.__getapps()
         return self._apps
@@ -41,7 +41,7 @@ class CloudFoundryApp:
         Maybe build that class as a child of CloudFoundryApp
         """
 
-    def restart(self, app_name: str, strategy: Optional[str], no_wait: Optional[bool]) -> str:
+    def restart(self, app_name: str, strategy: Optional[str], no_wait: bool = False) -> str:
         """Stop all instances of the app, then start them again.
         
         Keyword arguments:

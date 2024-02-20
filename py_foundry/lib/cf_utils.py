@@ -4,34 +4,42 @@ from typing import Callable, Optional
 
 from lib.log_config import cf_logger
 from lib.methods import run_command
+from lib.service_integration import CloudFoundryService
 
 
-class ServiceKey:
+class ServiceKey(CloudFoundryService):
+        
     def __init__(self,
                  service_name: str,
                  service_key_name: str = 'SharedDevKey',
                  call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
+        super().__init__(call_cf)
+
         self.service_name = service_name
         self.service_key_name = service_key_name
-        self._call_cf = call_cf
 
     def fetch_service_key(self) -> dict:
-        c = f"""
-            cf service-key {self.service_name} {self.service_key_name} | sed '1,2d'  # Delete lines 1,2 from stream
-        """
-        service_key_text = self._call_cf(c)
-
+        service_key_text = self.service_key(self.service_name, self.service_key_name)
         return json.loads(service_key_text)
 
     def fetch_service_key_credentials(self) -> dict:
         service_key = self.fetch_service_key()
         return service_key.get('credentials')
 
-    def create_service_key(self):
-        c = f"cf create-service-key {self.service_name} {self.service_key_name}"
-        self._call_cf
+    def create(self,
+               service_name: str,
+               service_key_name: str,
+               json_params: Optional[str],  # Not sure why when calling this method, json_params is mandatory
+               wait: bool = True) -> str:
+        return self.create_service_key(service_name, service_key_name, json_params=json_params, wait=wait)
 
+    def delete(self,
+               service_name: str,
+               service_key_name: str,
+               force: bool = False,
+               wait: bool = True) -> str:
+        return self.delete_service_key(service_name, service_key_name, force, wait)
 
 class CreateService:
     def __init__(self,

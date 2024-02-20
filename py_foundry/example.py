@@ -1,4 +1,5 @@
 from lib.login import CloudFoundryStart
+from lib.cf_utils import ServiceKey
 from py_foundry.lib.app_lifecycle import CloudFoundryApp
 from lib.methods import get_cf_credentials
 
@@ -16,11 +17,14 @@ def main() -> None:
     # res = app.set_env('di-aysa-dev', 'test2', 'helloworld')
     # print(res)
 
-    res = app.env('di-aysa-dev')
-    print(res)
+    # res = app.env('di-aysa-dev')
+    # print(res)
 
-
-
+    sk = ServiceKey('dev-di-hana-hdi')
+    # print(sk.fetch_service_key())
+    # print(sk.fetch_service_key_credentials())
+    print(sk.create('dev-di-hana-hdi', 'gsalomone-test', None))
+    print(sk.delete('dev-di-hana-hdi', 'gsalomone-test'))
     
 if __name__ == '__main__':
     main()
