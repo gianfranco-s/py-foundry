@@ -43,6 +43,8 @@ class CloudFoundryApp:
         return 'OK' if 'OK' in res else 'FAILED'
 
     def push():
+        # Tentatively implemented with the class PushAppWithManifest
+        # Maybe implement PushApp
         """ Not implemented """
 
     def env():
