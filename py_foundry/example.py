@@ -38,15 +38,15 @@ def main() -> None:
     # res = app.set_env('di-aysa-dev', 'test2', 'helloworld')
     # print(res)
 
-    # res = app.env('di-aysa-dev')
-    # print(res)
+    res = app.env('di-aysa-stg')
+    print(res)
 
-    sk = ServiceKey('dev-di-hana-hdi')
+    # sk = ServiceKey('dev-di-hana-hdi')
     # print(sk.fetch_service_key())
     # print(sk.fetch_service_key_credentials())
-    print(sk.create('dev-di-hana-hdi', 'gsalomone-test', None))
-    print(sk.delete('dev-di-hana-hdi', 'gsalomone-test'))
+    # print(sk.create('dev-di-hana-hdi', 'gsalomone-test', None))
+    # print(sk.delete('dev-di-hana-hdi', 'gsalomone-test'))
     
 if __name__ == '__main__':
-    # main()
-    create_credentials_file('prd')
+    main()
+    # create_credentials_file('prd')

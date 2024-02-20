@@ -3,7 +3,7 @@ from py_foundry.tests.mock_call_cf import mock_run_command
 
 def test_show_apps():
     app = CloudFoundryApp(call_cf=mock_run_command)
-    assert app.show_apps == ('app-1', 'app-2')
+    assert app.apps == ('app-1', 'app-2')
 
 
 def test_set_env():
