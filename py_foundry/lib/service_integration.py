@@ -21,7 +21,7 @@ class CloudFoundryService:
         return tuple(item.split()[0] for item in skip_titles_and_last_row)
 
     @property
-    def show_services(self, refresh: bool = False) -> tuple:
+    def show_services(self, refresh: bool = False) -> tuple:  # TODO: rename to `services`
         if refresh or self._services is None:
             self._services = self.__getservices()
         return self._services
@@ -92,6 +92,14 @@ class CloudFoundryService:
 
         self._call_cf(c)
 
+    def create_service(self, service_type: str, service_plan: str, service_name: str, json_params: Optional[str]):
+        c = f"cf create-service {service_type} {service_plan} {service_name}"
+
+        if json_params is not None:
+            c = ' '.join([c, f"-c '{json_params}'"])
+
+        return self._call_cf(c)
+
     def create_user_provided_service():
         # cf create-user-provided-service
         """ Not implemented """
@@ -103,9 +111,6 @@ class CloudFoundryService:
         """ Not implemented """
 
     def update_user_provided_service():
-        """ Not implemented """
-
-    def create_service():
         """ Not implemented """
 
     def update_service():

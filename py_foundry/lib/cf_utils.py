@@ -41,7 +41,7 @@ class ServiceKey(CloudFoundryService):
                wait: bool = True) -> str:
         return self.delete_service_key(service_name, service_key_name, force, wait)
 
-class CreateService:
+class CreateService():
     def __init__(self,
                  service_name: str,
                  service_type: Optional[str],
@@ -57,11 +57,6 @@ class CreateService:
 
     def create_service_command(self) -> str:
         cf_logger.info(f'Creating service {self.service_name}')
-
-        c = f"cf create-service {self.service_type} {self.service_plan} {self.service_name}"
-
-        if self.json_params is not None:
-            c = ' '.join([c, f"-c '{self.json_params}'"])
 
         self._call_cf
 
@@ -87,26 +82,29 @@ class CreateUserProvidedService:
         self._call_cf
 
 
-class XSUAAService(CreateService):
+class XSUAAService(CloudFoundryService):
     def __init__(self,
                  service_name: str,
                  bound_app_name: str,
                  xs_security_template_file: str,
                  service_plan: str = 'application',
-                 call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
-
-        super().__init__(service_name, service_type='xsuaa', service_plan=service_plan, json_params=None, call_cf=call_cf)
+        self.service_name = service_name
+        self.service_type = 'xsuaa'
+        self.service_plan = service_plan
         self._xs_security_template_file = xs_security_template_file
         self.bound_app_name = bound_app_name
+
         self.json_params = self.set_json_params()
-        self._call_cf = call_cf
 
     def set_json_params(self) -> str:
         with open(self._xs_security_template_file, 'r') as f:
             place_holder_file = f.read()
 
         return place_holder_file.replace('APP_NAME_PLACEHOLDER', self.bound_app_name)
+
+    def create(self) -> str:
+        self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
 
 
 class PushAppWithManifest:
