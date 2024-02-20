@@ -62,9 +62,11 @@ class CreateUserProvidedService:
     def __init__(self,
                  service_name: str,
                  json_params: Optional[str],
+                 call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
         self.service_name = service_name
         self.json_params = json_params
+        self._call_cf = call_cf
 
     def create_service_command(self) -> str:
         cf_logger.info(f'Creating service {self.service_name}')
@@ -90,6 +92,7 @@ class XSUAAService(CreateService):
         self._xs_security_template_file = xs_security_template_file
         self.bound_app_name = bound_app_name
         self.json_params = self.set_json_params()
+        self._call_cf = call_cf
 
     def set_json_params(self) -> str:
         with open(self._xs_security_template_file, 'r') as f:
@@ -101,10 +104,12 @@ class XSUAAService(CreateService):
 class PushAppWithManifest:
     def __init__(self,
                  manifest_path: str,
-                **kwargs,
+                 call_cf: Callable[[str, bool], str] = run_command,
+                 **kwargs,
                  ) -> None:
         self.manifest_path = manifest_path
         self.kwargs = kwargs
+        self._call_cf = call_cf
 
     def _create_app_command(self) -> str:
         c = f"cf push --manifest {self.manifest_path}"
@@ -112,7 +117,7 @@ class PushAppWithManifest:
             for var_name, var_value in self.kwargs.items():
                 c = ' '.join([c, f"\\\n\t--var {var_name}={var_value}"])
 
-        return c
+        self._call_cf(c)
 
     def push_app(self) -> str:
         return self._create_app_command()
@@ -126,6 +131,7 @@ class PushAppRouter(PushAppWithManifest):
                  xsuaa_service_name: str,
                  xs_app_file_template_path: str,
                  manifest_path: str,
+                 call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
 
         approuter_params = {
@@ -136,6 +142,7 @@ class PushAppRouter(PushAppWithManifest):
         self.baseapp_name = baseapp_name
         self.xs_app_file_template_path = xs_app_file_template_path
         self.xs_app_file_path = xs_app_file_template_path.replace('-template.json', '.json')
+        self._call_cf = call_cf
 
     def __create_app_descriptor(self) -> None:
         with open(self.xs_app_file_template_path, 'r') as f:
@@ -148,9 +155,7 @@ class PushAppRouter(PushAppWithManifest):
     def __remove_app_descriptor(self) -> None:
         os.remove(self.xs_app_file_path)
 
-    def push_app(self, verbose: bool = False) -> None:
+    def push_app(self) -> None:
         self.__create_app_descriptor()
-        c = self._create_app_command()
-        if verbose:
-            cf_logger.info(c)
+        self._create_app_command()
         self.__remove_app_descriptor()
