@@ -5,6 +5,7 @@ from typing import Callable, Optional
 from lib.log_config import cf_logger
 from lib.methods import run_command
 
+
 class CloudFoundryService:
     def __init__(self,
                  call_cf: Callable[[str, bool], str] = run_command) -> None:

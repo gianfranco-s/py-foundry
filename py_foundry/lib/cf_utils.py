@@ -23,8 +23,8 @@ class ServiceKey(CloudFoundryService):
         service_key_text = self.service_key(self.service_name, service_key_name)
         return json.loads(service_key_text)
 
-    def fetch_service_key_credentials(self) -> dict:
-        service_key = self.fetch_service_key()
+    def fetch_service_key_credentials(self, service_key_name: str = DEFAULT_SHARED_DEV_KEY_NAME) -> dict:
+        service_key = self.fetch_service_key(service_key_name)
         return service_key.get('credentials')
 
     def create(self,

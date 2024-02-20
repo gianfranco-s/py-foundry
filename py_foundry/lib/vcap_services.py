@@ -1,7 +1,7 @@
 import json
 
-from cf_utils import ServiceKey
-from lib.log_config import logger
+from lib.cf_utils import ServiceKey
+from lib.log_config import cf_logger
 
 
 def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, service_key_name: str) -> dict:
@@ -37,27 +37,23 @@ def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, 
 
 def get_vcap_services(org: str,
                       space: str,
-                      username: str,
-                      password: str,
                       env_name: str = 'dev',
-                      output_file: str = 'hana-env-credentials-{env_name}.env'
+                      output_file_prefix: str = 'hana-env-credentials-{env_name}.env'
                       ) -> None:
-    logger.info('Fetching env file to deploy objects in SAP BAS')
+    cf_logger.info('Fetching env file to deploy objects in SAP BAS')
 
     tables_service_name = f'{env_name}-di-hana-hdi'
 
-    sk = ServiceKey(org, space, username, password, tables_service_name)
-    credentials = sk.fetch_service_key_credentials()
+    sk = ServiceKey(tables_service_name)
 
-    vcap = get_vcap(credentials, tables_service_name, sk.org, sk.space, sk.service_key_name)
+    service_key_name = 'SharedDevKey'
+    credentials = sk.fetch_service_key_credentials(service_key_name)
+
+    vcap = get_vcap(credentials, tables_service_name, org, space, service_key_name)
     vcap_json = json.dumps(vcap, indent=4)
-    logger.debug(f'JSON data for env variable:\n{vcap_json}')
+    cf_logger.debug(f'JSON data for env variable:\n{vcap_json}')
 
     vcap_services = f"VCAP_SERVICES='{vcap_json}'"
 
-    with open(output_file.format(env_name=env_name), 'w') as f:
+    with open(output_file_prefix.format(env_name=env_name), 'w') as f:
         f.write(vcap_services)
-
-
-if __name__ == '__main__':
-    get_vcap_services('qas')
