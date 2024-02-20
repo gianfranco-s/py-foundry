@@ -2,9 +2,8 @@ import json
 
 from typing import Callable, Optional
 
-from lib.methods import run_command
-
 from lib.log_config import cf_logger
+from lib.methods import run_command
 
 class CloudFoundryService:
     def __init__(self,
@@ -92,11 +91,19 @@ class CloudFoundryService:
 
         self._call_cf(c)
 
-    def create_service(self, service_type: str, service_plan: str, service_name: str, json_params: Optional[str]):
+    def create_service(self,
+                       service_type: str,
+                       service_plan: str,
+                       service_name: str,
+                       json_params: Optional[str],
+                       wait: bool = True) -> str:
         c = f"cf create-service {service_type} {service_plan} {service_name}"
 
         if json_params is not None:
             c = ' '.join([c, f"-c '{json_params}'"])
+
+        if wait:
+            c = ' '.join([c, "--wait"])
 
         return self._call_cf(c)
 
