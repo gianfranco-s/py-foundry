@@ -88,6 +88,11 @@ class CloudFoundryApp:
 
         return self._call_cf(c)
 
+    def create_app(self, app_name: str) -> str:
+        c = f'cf create-app {app_name}'
+
+        return self._call_cf(c)
+
     def run_task():
         """ Not implemented """
 

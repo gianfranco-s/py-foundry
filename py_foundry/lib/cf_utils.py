@@ -124,6 +124,7 @@ class PushAppRouter(PushAppWithManifest):
                  manifest_path: str,
                  call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
+        super().__init__(call_cf=call_cf)
 
         approuter_params = {
             'auth_service': xsuaa_service_name,
@@ -133,7 +134,6 @@ class PushAppRouter(PushAppWithManifest):
         self.baseapp_name = baseapp_name
         self.xs_app_file_template_path = xs_app_file_template_path
         self.xs_app_file_path = xs_app_file_template_path.replace('-template.json', '.json')
-        self._call_cf = call_cf
 
     def __create_app_descriptor(self) -> None:
         with open(self.xs_app_file_template_path, 'r') as f:
@@ -148,5 +148,5 @@ class PushAppRouter(PushAppWithManifest):
 
     def push_app(self) -> None:
         self.__create_app_descriptor()
-        self._create_app_command()
+        self.push_with_manifest(self.manifest_path, **self.kwargs)
         self.__remove_app_descriptor()
