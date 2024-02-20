@@ -5,19 +5,16 @@ from lib.log_config import cf_logger
 
 
 def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, service_key_name: str) -> dict:
-    service_type = 'hana'  # Full name: SAP HANA Schemas & HDI Containers
-    service_plan = 'hdi-shared'
-
     return {
         'hana': [{
-            'name': service_type,
+            'name': 'hana-hdi',
             'instance_name': tables_service_name,
             'label': tables_service_name,
             'tags':
                 ['hana', 'database', 'relational', 'mta-resource-name:hdi_db',
                     'endpoint:https://api.cf.us10.hana.ondemand.com', f'org:{org}',
                     f'space:{space}'],
-            'plan': service_plan,
+            'plan': 'hdi-shared',
             'credentials': {
                 'service_key_name': service_key_name,
                 'host': credentials.get('host'),
