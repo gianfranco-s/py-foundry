@@ -2,25 +2,25 @@ import json
 import os
 from typing import Callable, Optional
 
-from lib.app_lifecycle import CloudFoundryApp
-from lib.log_config import cf_logger
-from lib.methods import run_command
-from lib.service_integration import CloudFoundryService
+from py_foundry.lib.methods import run_command
+from py_foundry.lib.service_integration import CloudFoundryService
+from py_foundry.lib.app_lifecycle import CloudFoundryApp
+
+DEFAULT_SHARED_DEV_KEY_NAME = 'SharedDevKey'
+
 
 class ServiceKey(CloudFoundryService):
         
     def __init__(self,
                  service_name: str,
-                 service_key_name: str = 'SharedDevKey',
                  call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
         super().__init__(call_cf)
 
         self.service_name = service_name
-        self.service_key_name = service_key_name
 
-    def fetch_service_key(self) -> dict:
-        service_key_text = self.service_key(self.service_name, self.service_key_name)
+    def fetch_service_key(self, service_key_name: str = DEFAULT_SHARED_DEV_KEY_NAME) -> dict:
+        service_key_text = self.service_key(self.service_name, service_key_name)
         return json.loads(service_key_text)
 
     def fetch_service_key_credentials(self) -> dict:
@@ -28,37 +28,17 @@ class ServiceKey(CloudFoundryService):
         return service_key.get('credentials')
 
     def create(self,
-               service_name: str,
-               service_key_name: str,
                json_params: Optional[str],  # Not sure why when calling this method, json_params is mandatory
+               service_key_name: str = DEFAULT_SHARED_DEV_KEY_NAME,
                wait: bool = True) -> str:
-        return self.create_service_key(service_name, service_key_name, json_params=json_params, wait=wait)
+
+        return self.create_service_key(self.service_name, service_key_name, json_params=json_params, wait=wait)
 
     def delete(self,
-               service_name: str,
-               service_key_name: str,
+               service_key_name: str = DEFAULT_SHARED_DEV_KEY_NAME,
                force: bool = False,
                wait: bool = True) -> str:
-        return self.delete_service_key(service_name, service_key_name, force, wait)
-
-class CreateService():
-    def __init__(self,
-                 service_name: str,
-                 service_type: Optional[str],
-                 service_plan: Optional[str],
-                 json_params: Optional[str],
-                 call_cf: Callable[[str, bool], str] = run_command
-                 ) -> None:
-        self.service_name = service_name
-        self.service_type = service_type
-        self.service_plan = service_plan
-        self.json_params = json_params
-        self._call_cf = call_cf
-
-    def create_service_command(self) -> str:
-        cf_logger.info(f'Creating service {self.service_name}')
-
-        self._call_cf
+        return self.delete_service_key(self.service_name, service_key_name, force, wait)
 
 
 class CreateUserProvidedService(CloudFoundryService):
@@ -81,7 +61,8 @@ class XSUAAService(CloudFoundryService):
                  bound_app_name: str,
                  xs_security_template_file: str,
                  service_plan: str = 'application',
-                 ) -> None:
+                 call_cf: Callable[[str, bool], str] = run_command) -> None:
+        super().__init__(call_cf=call_cf)
         self.service_name = service_name
         self.service_type = 'xsuaa'
         self.service_plan = service_plan
@@ -95,7 +76,7 @@ class XSUAAService(CloudFoundryService):
             place_holder_file = f.read()
 
         return place_holder_file.replace('APP_NAME_PLACEHOLDER', self.bound_app_name)
-
+    
     def create(self) -> str:
         self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
 
@@ -124,13 +105,11 @@ class PushAppRouter(PushAppWithManifest):
                  manifest_path: str,
                  call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
-        super().__init__(call_cf=call_cf)
-
         approuter_params = {
             'auth_service': xsuaa_service_name,
             'auth_app_name': approuter_name
         }
-        super().__init__(manifest_path, **approuter_params)
+        super().__init__(manifest_path, **approuter_params, call_cf=call_cf)
         self.baseapp_name = baseapp_name
         self.xs_app_file_template_path = xs_app_file_template_path
         self.xs_app_file_path = xs_app_file_template_path.replace('-template.json', '.json')
