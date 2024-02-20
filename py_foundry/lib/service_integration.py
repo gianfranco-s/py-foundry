@@ -100,9 +100,13 @@ class CloudFoundryService:
 
         return self._call_cf(c)
 
-    def create_user_provided_service():
-        # cf create-user-provided-service
-        """ Not implemented """
+    def create_user_provided_service(self, service_name: str, json_params: Optional[str]) -> str:
+        c = f"cf create-user-provided-service {service_name}"
+
+        if json_params is not None:
+            c = ' '.join([c, f"-p '{json_params}'"])
+
+        return self._call_cf(c)
 
     def service_keys():
         """ Not implemented """

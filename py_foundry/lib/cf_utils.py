@@ -61,25 +61,18 @@ class CreateService():
         self._call_cf
 
 
-class CreateUserProvidedService:
+class CreateUserProvidedService(CloudFoundryService):
     def __init__(self,
                  service_name: str,
                  json_params: Optional[str],
                  call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
+        super().__init__(call_cf=call_cf)
         self.service_name = service_name
         self.json_params = json_params
-        self._call_cf = call_cf
 
-    def create_service_command(self) -> str:
-        cf_logger.info(f'Creating service {self.service_name}')
-
-        c = f"cf create-user-provided-service {self.service_name}"
-
-        if self.json_params is not None:
-            c = ' '.join([c, f"-c '{self.json_params}'"])
-
-        self._call_cf
+    def create(self) -> str:
+        return self.create_user_provided_service(self.service_name, self.json_params)
 
 
 class XSUAAService(CloudFoundryService):
