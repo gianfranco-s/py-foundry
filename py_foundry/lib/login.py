@@ -3,6 +3,7 @@ from lib.log_config import cf_logger
 
 from typing import Callable
 
+
 class CloudFoundryAuthenticationError(Exception):
     pass
 
@@ -32,7 +33,7 @@ class CloudFoundryStart:
             self.__login()
             self.__set_target()
             return 'ok'
-        
+
         except CloudFoundryAuthenticationError as e:
             return 'failed'
 
@@ -50,13 +51,13 @@ class CloudFoundryStart:
         if self._verbose:
             cf_logger.info(f'Logging in with user: {self._user} - password: {"*"*len(self._password)}\n')
             cf_logger.info(stdout)
-        
+
         if 'OK' in stdout:
             return
 
         elif 'FAILED' in stdout:
             raise CloudFoundryAuthenticationError('Authentication failed')
-        
+
         elif 'PASSWORD_LOCKED' in stdout:
             raise CloudFoundryAuthenticationError('Password locked. It usually gets unlocked after 1h.')
 

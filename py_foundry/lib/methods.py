@@ -3,16 +3,17 @@ import subprocess
 
 from typing import Tuple
 
+
 def run_command(command: str, verbose: bool = False, no_call: bool = False) -> str:
     """Run command as subprocess.
-    
+
     Keyword arguments:
     command -- cf command to run
     verbose -- Default is False
     no_call -- used for debugging. Prd should be False
     Return: result of operation
     """
-    
+
     if no_call:
         print(command)
         return '-- no-call --'

@@ -16,7 +16,7 @@ class CloudFoundryApp:
 
     def __getapps(self) -> tuple:
         """ Return a tuple of apps. """
-        items_txt = self._call_cf(f'cf apps | sed 1,2d')
+        items_txt = self._call_cf('cf apps | sed 1,2d')
         items_by_row = items_txt.split('\n')
         skip_titles_and_last_row = items_by_row[1:-1]  # skips titles and last, empty row
         return tuple(item.split()[0] for item in skip_titles_and_last_row)
@@ -44,46 +44,44 @@ class CloudFoundryApp:
             for var_name, var_value in kwargs.items():
                 c = ' '.join([c, f"\\\n\t--var {var_name}={var_value}"])
 
-        self._call_cf(c) 
+        self._call_cf(c)
 
     def restart(self, app_name: str, strategy: Optional[str], no_wait: bool = False) -> str:
         """Stop all instances of the app, then start them again.
-        
+
         Keyword arguments:
         app_name -- application's name
         strategy -- Deployment strategy, either rolling or null.
         no_wait -- Exit when the first instance of the web process is healthy.
         Return: result of action
         """
-        
+
         c = f'cf restart {app_name}'
-        
+
         # ------------ Untested ------------
         # if strategy not in ('rolling', 'null'):
         #     raise CloudFoundryAppLifecycleError('Invalid strategy')
-        
 
         # if strategy:
         #     c = ' '.join([c, f'--strategy {strategy}'])
-        
+
         # if no_wait:
         #     c = ' '.join([c, f'--no-wait'])
 
         return self._call_cf(c)
-        
 
     def restage(self, app_name: str) -> str:
-        """Stage the app's latest package into a droplet and restart the app with 
+        """Stage the app's latest package into a droplet and restart the app with
         this new droplet and updated configuration (environment variables, service
         bindings, buildpack, stack, etc.).
-        
+
         Keyword arguments: (implementation is the same as restart()
         app_name -- application's name
         strategy -- Deployment strategy, either rolling or null.
         no_wait -- Exit when the first instance of the web process is healthy.
         Return: result of action
         """
-        
+
         c = f'cf restage {app_name}'
 
         return self._call_cf(c)

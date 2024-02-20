@@ -51,7 +51,7 @@ class CloudFoundryService:
 
         if json_params:
             c = ' '.join([c, f"-c {json.dumps(json_params)}"])
-        
+
         if wait:
             c = ' '.join([c, "--wait"])
 

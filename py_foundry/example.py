@@ -7,9 +7,10 @@ from lib.methods import get_cf_credentials
 
 API_ENDPOINT = 'https://api.cf.us10.hana.ondemand.com'
 
+
 def create_credentials_file(env_name: str) -> str:
     CloudFoundryStart('prd-cf-aysa', 'default', *get_cf_credentials('cf_creds.json'), API_ENDPOINT).start_session()
-    sk = ServiceKey(f'prd-di-hana-hdi')
+    sk = ServiceKey('prd-di-hana-hdi')
     credentials = sk.fetch_service_key_credentials()
 
     credentials_for_file = {
@@ -46,7 +47,8 @@ def main() -> None:
     # print(sk.fetch_service_key_credentials())
     # print(sk.create('dev-di-hana-hdi', 'gsalomone-test', None))
     # print(sk.delete('dev-di-hana-hdi', 'gsalomone-test'))
-    
+
+
 if __name__ == '__main__':
     main()
     # create_credentials_file('prd')

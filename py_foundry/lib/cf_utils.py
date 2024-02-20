@@ -10,7 +10,7 @@ DEFAULT_SHARED_DEV_KEY_NAME = 'SharedDevKey'
 
 
 class ServiceKey(CloudFoundryService):
-        
+
     def __init__(self,
                  service_name: str,
                  call_cf: Callable[[str, bool], str] = run_command
@@ -76,7 +76,7 @@ class XSUAAService(CloudFoundryService):
             place_holder_file = f.read()
 
         return place_holder_file.replace('APP_NAME_PLACEHOLDER', self.bound_app_name)
-    
+
     def create(self) -> str:
         self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
 

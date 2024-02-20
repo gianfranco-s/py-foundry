@@ -1,4 +1,4 @@
-from py_foundry.lib.login import CloudFoundryStart, CloudFoundryAuthenticationError
+from py_foundry.lib.login import CloudFoundryStart
 
 
 def mock_run_command(command: str) -> str:
