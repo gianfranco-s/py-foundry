@@ -1,66 +1,26 @@
 import json
 import os
-from typing import Optional
+from typing import Callable, Optional
 
 from lib.log_config import cf_logger
 from lib.methods import run_command
 
 
-class CloudFoundrySessionManager:
-    def __init__(self) -> None:
-        self._services = None
-        self._apps = None
-
-    def __getitems(self, items_name: 'str') -> tuple:
-        """ Return a tuple of services. We're only using part of the cf `items` command
-        Only `items` allowed: `services`, `apps`
-        """
-        items_txt = run_command(f'cf {items_name} | sed 1,2d')
-        items_by_row = items_txt.split('\n')[1:-1]  # skip titles and last, empty row
-        return tuple(item.split()[0] for item in items_by_row)
-
-    @property
-    def services(self, refresh: bool = False):
-        if refresh or self._services is None:
-            self._services = self.__getitems('services')
-        return self._services
-
-    @property
-    def apps(self, refresh: bool = False):
-        if refresh or self._apps is None:
-            self._apps = self.__getitems('apps')
-        return self._apps
-
-    @staticmethod
-    def set_env(app_name: str, variable_name: str, variable_value: str) -> str:
-        c = f"cf set-env {app_name} {variable_name} '{variable_value}'"
-        return c
-
-    @staticmethod
-    def create_app(app_name: str) -> str:
-        c = f'cf set-env {app_name}'
-        return c
-
-
-class ServiceKey(CloudFoundrySessionManager):
+class ServiceKey:
     def __init__(self,
-                 org: str,
-                 space: str,
-                 username: str,
-                 password: str,
                  service_name: str,
                  service_key_name: str = 'SharedDevKey',
-                 api_endpoint: str = 'https://api.cf.us10.hana.ondemand.com'
+                 call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
-        super().__init__(org, space, username, password, api_endpoint)
         self.service_name = service_name
         self.service_key_name = service_key_name
+        self._call_cf = call_cf
 
     def fetch_service_key(self) -> dict:
         c = f"""
             cf service-key {self.service_name} {self.service_key_name} | sed '1,2d'  # Delete lines 1,2 from stream
         """
-        service_key_text = run_command(c)
+        service_key_text = self._call_cf(c)
 
         return json.loads(service_key_text)
 
@@ -70,7 +30,7 @@ class ServiceKey(CloudFoundrySessionManager):
 
     def create_service_key(self):
         c = f"cf create-service-key {self.service_name} {self.service_key_name}"
-        return c
+        self._call_cf
 
 
 class CreateService:
@@ -79,11 +39,13 @@ class CreateService:
                  service_type: Optional[str],
                  service_plan: Optional[str],
                  json_params: Optional[str],
+                 call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
         self.service_name = service_name
         self.service_type = service_type
         self.service_plan = service_plan
         self.json_params = json_params
+        self._call_cf = call_cf
 
     def create_service_command(self) -> str:
         cf_logger.info(f'Creating service {self.service_name}')
@@ -93,7 +55,7 @@ class CreateService:
         if self.json_params is not None:
             c = ' '.join([c, f"-c '{self.json_params}'"])
 
-        return c
+        self._call_cf
 
 
 class CreateUserProvidedService:
@@ -112,7 +74,7 @@ class CreateUserProvidedService:
         if self.json_params is not None:
             c = ' '.join([c, f"-c '{self.json_params}'"])
 
-        return c
+        self._call_cf
 
 
 class XSUAAService(CreateService):
@@ -121,9 +83,10 @@ class XSUAAService(CreateService):
                  bound_app_name: str,
                  xs_security_template_file: str,
                  service_plan: str = 'application',
+                 call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
 
-        super().__init__(service_name, service_type='xsuaa', service_plan=service_plan, json_params=None)
+        super().__init__(service_name, service_type='xsuaa', service_plan=service_plan, json_params=None, call_cf=call_cf)
         self._xs_security_template_file = xs_security_template_file
         self.bound_app_name = bound_app_name
         self.json_params = self.set_json_params()
@@ -136,6 +99,13 @@ class XSUAAService(CreateService):
 
 
 class PushAppWithManifest:
+    def __init__(self,
+                 manifest_path: str,
+                **kwargs,
+                 ) -> None:
+        self.manifest_path = manifest_path
+        self.kwargs = kwargs
+
     def _create_app_command(self) -> str:
         c = f"cf push --manifest {self.manifest_path}"
         if self.kwargs:
@@ -146,13 +116,6 @@ class PushAppWithManifest:
 
     def push_app(self) -> str:
         return self._create_app_command()
-
-    def __init__(self,
-                 manifest_path: str,
-                **kwargs,
-                 ) -> None:
-        self.manifest_path = manifest_path
-        self.kwargs = kwargs
 
 
 class PushAppRouter(PushAppWithManifest):

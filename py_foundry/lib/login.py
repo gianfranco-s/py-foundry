@@ -7,7 +7,7 @@ class CloudFoundryAuthenticationError(Exception):
     pass
 
 
-class CloudFoundryLogin:
+class CloudFoundryStart:
     def __init__(self,
                  org: str,
                  space: str,
@@ -15,7 +15,7 @@ class CloudFoundryLogin:
                  password: str,
                  api_endpoint: str,
                  verbose: bool = False,
-                 run: Callable[[str], str] = run_command) -> None:
+                 call_cf: Callable[[str, bool], str] = run_command) -> None:
 
         self.org = org
         self.space = space
@@ -24,7 +24,7 @@ class CloudFoundryLogin:
         self._password = password
         self._verbose = verbose
         self._api_endpoint = api_endpoint
-        self._call_cf = run
+        self._call_cf = call_cf
 
     def start_session(self) -> str:
         try:
@@ -58,7 +58,7 @@ class CloudFoundryLogin:
             raise CloudFoundryAuthenticationError('Authentication failed')
         
         elif 'PASSWORD_LOCKED' in stdout:
-            raise CloudFoundryAuthenticationError('Password locked. I usually gets unlocked after 1h.')
+            raise CloudFoundryAuthenticationError('Password locked. It usually gets unlocked after 1h.')
 
     def __set_api_endpoint(self) -> None:
         stdout = self._call_cf(f'cf api {self._api_endpoint}')
