@@ -10,3 +10,4 @@ Will move to use the API in the future.
    ```
 3. Create credentials file following `cf_creds_template.json`
 4. The library follows the basic command list from `cf cli`
+5. There are some helpful classes in cf_utils.py
