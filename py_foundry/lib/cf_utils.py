@@ -44,7 +44,7 @@ class ServiceKey(CloudFoundryService):
 class CreateUserProvidedService(CloudFoundryService):
     def __init__(self,
                  service_name: str,
-                 json_params: Optional[str],
+                 json_params: Optional[str] = None,
                  call_cf: Callable[[str, bool], str] = run_command
                  ) -> None:
         super().__init__(call_cf=call_cf)
@@ -53,6 +53,11 @@ class CreateUserProvidedService(CloudFoundryService):
 
     def create(self) -> str:
         return self.create_user_provided_service(self.service_name, self.json_params)
+
+    def set_json_params_from_file(self, filepath: str) -> None:
+        with open(filepath, 'r') as f:
+            params = params = f.read()
+        self.json_params = params
 
 
 class XSUAAService(CloudFoundryService):
