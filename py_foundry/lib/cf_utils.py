@@ -96,7 +96,7 @@ class PushAppWithManifest(CloudFoundryApp):
 
 
 class PushAppRouter(PushAppWithManifest):
-    """ Manifest needs to have defined variables `auth_service` and `auth_app_name`"""
+    """ Manifest needs to have defined all the variables present in `approuter_params`. """
     def __init__(self,
                  approuter_name: str,
                  baseapp_name: str,  # app to which the AppRouter will be bound
@@ -107,7 +107,8 @@ class PushAppRouter(PushAppWithManifest):
                  ) -> None:
         approuter_params = {
             'auth_service': xsuaa_service_name,
-            'auth_app_name': approuter_name
+            'app_name': baseapp_name,
+            'auth_app_name': approuter_name,
         }
         super().__init__(manifest_path, **approuter_params, call_cf=call_cf)
         self.baseapp_name = baseapp_name
