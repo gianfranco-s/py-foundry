@@ -3,8 +3,8 @@ import os
 from typing import Callable, Optional
 
 from py_foundry.lib.methods import run_command
-from py_foundry.lib.service_integration import CloudFoundryService
-from py_foundry.lib.app_lifecycle import CloudFoundryApp
+from py_foundry.lib.services import CloudFoundryService
+from py_foundry.lib.apps import CloudFoundryApp
 
 DEFAULT_SHARED_DEV_KEY_NAME = 'SharedDevKey'
 

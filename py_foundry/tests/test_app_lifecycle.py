@@ -1,4 +1,4 @@
-from py_foundry.lib.app_lifecycle import CloudFoundryApp
+from py_foundry.lib.apps import CloudFoundryApp
 from py_foundry.tests.mock_call_cf import mock_run_command
 
 

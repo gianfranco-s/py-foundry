@@ -29,22 +29,22 @@ class CloudFoundryStart:
 
     def start_session(self) -> str:
         try:
-            self.__set_api_endpoint()
-            self.__login()
-            self.__set_target()
+            self.set_api_endpoint()
+            self.login()
+            self.set_target()
             return 'ok'
 
         except CloudFoundryAuthenticationError as e:
             return 'failed'
 
-    def __set_target(self) -> None:
+    def set_target(self) -> None:
         """ Target can be set after initialization. """
         stdout = self._call_cf(f'cf target -o {self.org} -s {self.space}')
 
         if self._verbose:
             cf_logger.info(f'Setting target:\n{stdout}')
 
-    def __login(self) -> None:
+    def login(self) -> None:
         c = f'cf auth {self._user} {self._password}'
         stdout = self._call_cf(c)
 
@@ -61,7 +61,7 @@ class CloudFoundryStart:
         elif 'PASSWORD_LOCKED' in stdout:
             raise CloudFoundryAuthenticationError('Password locked. It usually gets unlocked after 1h.')
 
-    def __set_api_endpoint(self) -> None:
+    def set_api_endpoint(self) -> None:
         stdout = self._call_cf(f'cf api {self._api_endpoint}')
         stdout = '\n'.join([stdout, 'CF CLI logs out after setting api endpoint\n'])
 

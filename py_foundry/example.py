@@ -1,8 +1,8 @@
 import json
 
-from lib.login import CloudFoundryStart
+from py_foundry.lib.getting_started import CloudFoundryStart
 from lib.cf_utils import ServiceKey
-from py_foundry.lib.app_lifecycle import CloudFoundryApp
+from py_foundry.lib.apps import CloudFoundryApp
 from lib.methods import get_cf_credentials
 
 API_ENDPOINT = 'https://api.cf.us10.hana.ondemand.com'
