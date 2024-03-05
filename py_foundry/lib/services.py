@@ -21,7 +21,7 @@ class CloudFoundryService:
         return tuple(item.split()[0] for item in skip_titles_and_last_row)
 
     @property
-    def show_services(self, refresh: bool = False) -> tuple:  # TODO: rename to `services`
+    def services(self, refresh: bool = False) -> tuple:  # TODO: rename to `services`
         if refresh or self._services is None:
             self._services = self.__getservices()
         return self._services
