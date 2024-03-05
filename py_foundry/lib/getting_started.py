@@ -1,5 +1,5 @@
-from lib.methods import run_command
-from lib.log_config import cf_logger
+from py_foundry.lib.methods import run_command
+from py_foundry.lib.log_config import cf_logger
 
 from typing import Callable
 

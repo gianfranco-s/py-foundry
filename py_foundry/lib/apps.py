@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from lib.methods import run_command
+from py_foundry.lib.methods import run_command
 
 
 class CloudFoundryAppLifecycleError(Exception):
