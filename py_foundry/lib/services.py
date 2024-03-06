@@ -2,8 +2,8 @@ import json
 
 from typing import Callable, Optional
 
-from lib.log_config import cf_logger
-from lib.methods import run_command
+from py_foundry.lib.log_config import cf_logger
+from py_foundry.lib.methods import run_command
 
 
 class CloudFoundryService:

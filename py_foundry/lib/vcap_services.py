@@ -1,7 +1,7 @@
 import json
 
-from lib.cf_utils import ServiceKey
-from lib.log_config import cf_logger
+from py_foundry.lib.cf_utils import ServiceKey
+from py_foundry.lib.log_config import cf_logger
 
 
 def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, service_key_name: str) -> dict:
