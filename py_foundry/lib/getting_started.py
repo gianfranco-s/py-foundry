@@ -1,7 +1,13 @@
+import os
+import time
+
 from py_foundry.lib.methods import run_command
 from py_foundry.lib.log_config import cf_logger
 
 from typing import Callable
+
+__timestamp_file = 'last_execution_time.txt'
+TEMPORARY_TOKEN_LENGTH = 32
 
 
 class CloudFoundryAuthenticationError(Exception):
@@ -34,14 +40,26 @@ class CloudFoundryStart:
             return 'failed'
 
     def start_session_with_token(self) -> str:
+        if is_token_still_valid():
+            cf_logger.info('Temporary authentication code is still valid')
+            return
+
         cf_logger.info('Get Temporary Authentication code from https://login.cf.us10.hana.ondemand.com/passcode')
         cf_logger.info('temporary code: ')
-        temp_auth_token = input()
 
-        c = f'cf login -a {self._api_endpoint} -o {self.org} -s {self.space} --sso-passcode {temp_auth_token}'
+        while True:
+            temporary_auth_token = input()
+            if len(temporary_auth_token) < TEMPORARY_TOKEN_LENGTH:
+                cf_logger.error('Invalid token length. Please try again.')
+                continue
+            break
+
+        c = f'cf login -a {self._api_endpoint} -o {self.org} -s {self.space} --sso-passcode {temporary_auth_token}'
         stdout = self._call_cf(c)
 
         if 'OK' in stdout:
+            create_timestamp_file()  # To check the time when the user logged in
+            cf_logger.info('Logged in with temporary authentication token')
             return
 
         elif 'FAILED' in stdout:
@@ -81,3 +99,23 @@ class CloudFoundryStart:
 
         if self._verbose:
             cf_logger.info(f'Setting api endpoint:\n{stdout}')
+
+
+def is_token_still_valid(timestamp_file: str = __timestamp_file, valid_seconds: int = 4*60*60) -> bool:
+
+    if not os.path.exists(timestamp_file):
+        return False  # If the file doesn't exist, treat it as the first run
+
+    with open(timestamp_file, 'r') as file:
+        last_execution_time = float(file.read())
+
+    current_time = time.time()
+
+    return current_time - last_execution_time < valid_seconds
+
+
+def create_timestamp_file(timestamp_file: str = __timestamp_file) -> None:
+    current_time = time.time()
+
+    with open(timestamp_file, 'w') as file:
+        file.write(str(current_time))

@@ -32,7 +32,7 @@ def main() -> None:
     cf_credentials_path = 'cf_creds.json'
     cf_start = CloudFoundryStart(org, space, API_ENDPOINT, verbose=True)
     # cf_start.start_session_with_credentials(*get_cf_credentials(cf_credentials_path))
-    # cf_start.start_session_with_token()
+    cf_start.start_session_with_token()
 
     app = CloudFoundryApp()
     # print(app.show_apps)
