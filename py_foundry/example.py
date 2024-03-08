@@ -9,7 +9,7 @@ API_ENDPOINT = 'https://api.cf.us10.hana.ondemand.com'
 
 
 def create_credentials_file(env_name: str) -> str:
-    CloudFoundryStart('prd-cf-aysa', 'default', *get_cf_credentials('cf_creds.json'), API_ENDPOINT).start_session()
+    CloudFoundryStart('prd-cf-aysa', 'default', *get_cf_credentials('cf_creds.json'), API_ENDPOINT).start_session_with_credentials()
     sk = ServiceKey('prd-di-hana-hdi')
     credentials = sk.fetch_service_key_credentials()
 
@@ -28,10 +28,11 @@ def create_credentials_file(env_name: str) -> str:
 
 
 def main() -> None:
-    # org, space = ('dev-cf-aysa', 'default2')
-    # cf_credentials_path = 'cf_creds.json'
-    # cf_start = CloudFoundryStart(org, space, *get_cf_credentials(cf_credentials_path), API_ENDPOINT, verbose=True)
-    # cf_start.start_session()
+    org, space = ('dev-cf-aysa', 'default2')
+    cf_credentials_path = 'cf_creds.json'
+    cf_start = CloudFoundryStart(org, space, API_ENDPOINT, verbose=True)
+    # cf_start.start_session_with_credentials(*get_cf_credentials(cf_credentials_path))
+    # cf_start.start_session_with_token()
 
     app = CloudFoundryApp()
     # print(app.show_apps)
@@ -39,7 +40,7 @@ def main() -> None:
     # res = app.set_env('di-aysa-dev', 'test2', 'helloworld')
     # print(res)
 
-    res = app.env('di-aysa-stg')
+    res = app.env('di-aysa-dev')
     print(res)
 
     # sk = ServiceKey('dev-di-hana-hdi')

@@ -14,11 +14,11 @@ def mock_run_command(command: str) -> str:
 
 def test_login():
     cf_start = CloudFoundryStart('my-org', 'my-space', 'valid-user', 'pass', 'https://api.endpoint.com', call_cf=mock_run_command)
-    res = cf_start.start_session()
+    res = cf_start.start_session_with_credentials()
     assert res == 'ok'
 
 
 def test_failed_login():
     cf_start = CloudFoundryStart('my-org', 'my-space', 'user', 'pass', 'https://api.endpoint.com', call_cf=mock_run_command)
-    res = cf_start.start_session()
+    res = cf_start.start_session_with_credentials()
     assert res == 'failed'
