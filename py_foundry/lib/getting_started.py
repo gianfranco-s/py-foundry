@@ -43,8 +43,9 @@ class CloudFoundryStart:
         if is_token_still_valid():
             cf_logger.info('Temporary authentication code is still valid')
             return
-
-        cf_logger.info('Get Temporary Authentication code from https://login.cf.us10.hana.ondemand.com/passcode')
+        
+        temporary_auth_token_url = self._api_endpoint.replace('https://api', 'https://login', 1) + '/passcode'
+        cf_logger.info(f'Get Temporary Authentication code from {temporary_auth_token_url}')
         cf_logger.info('temporary code: ')
 
         while True:
