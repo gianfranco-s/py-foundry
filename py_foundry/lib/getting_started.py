@@ -4,10 +4,11 @@ import time
 from py_foundry.lib.methods import run_command
 from py_foundry.lib.log_config import cf_logger
 
-from typing import Callable
+from typing import Callable, Optional
 
 __timestamp_file = 'last_execution_time.txt'
 TEMPORARY_TOKEN_LENGTH = 32
+DEFAULT_TOKEN_VALIDITY_SECONDS = 4*60*60
 
 
 class CloudFoundryAuthenticationError(Exception):
@@ -39,8 +40,8 @@ class CloudFoundryStart:
         except CloudFoundryAuthenticationError as e:
             return 'failed'
 
-    def start_session_with_token(self) -> str:
-        if is_token_still_valid():
+    def start_session_with_token(self, token_validity_seconds: Optional[int] = None) -> str:
+        if is_token_still_valid(token_validity_seconds):
             cf_logger.info('Temporary authentication code is still valid')
             return
         
@@ -102,7 +103,8 @@ class CloudFoundryStart:
             cf_logger.info(f'Setting api endpoint:\n{stdout}')
 
 
-def is_token_still_valid(timestamp_file: str = __timestamp_file, valid_seconds: int = 4*60*60) -> bool:
+def is_token_still_valid(valid_seconds: int, timestamp_file: str = __timestamp_file) -> bool:
+    valid_seconds = valid_seconds or DEFAULT_TOKEN_VALIDITY_SECONDS
 
     if not os.path.exists(timestamp_file):
         return False  # If the file doesn't exist, treat it as the first run
