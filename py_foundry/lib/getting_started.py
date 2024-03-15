@@ -1,6 +1,7 @@
 import os
 import time
 
+from py_foundry.lib import PY_FOUNDRY_PATH
 from py_foundry.lib.methods import run_command
 from py_foundry.lib.log_config import cf_logger
 
@@ -103,7 +104,7 @@ class CloudFoundryStart:
             cf_logger.info(f'Setting api endpoint:\n{stdout}')
 
 
-def is_token_still_valid(valid_seconds: int, timestamp_file: str = __timestamp_file) -> bool:
+def is_token_still_valid(valid_seconds: int, timestamp_file: str = PY_FOUNDRY_PATH / __timestamp_file) -> bool:
     valid_seconds = valid_seconds or DEFAULT_TOKEN_VALIDITY_SECONDS
 
     if not os.path.exists(timestamp_file):
