@@ -32,7 +32,7 @@ APPS:
 
    - [ ] push                                   Push a new app or sync changes to an existing app
    - [ ] scale                                  Change or view the instance count, disk space limit, memory limit, and log rate limit for an app
-   - [ ] delete                                 Delete an app
+   - [x] delete                                 Delete an app
    - [ ] rename                                 Rename an app
 
    - [ ] cancel-deployment                      Cancel the most recent deployment for an app. Resets the current droplet to the previous deployment's droplet.
@@ -83,7 +83,7 @@ SERVICES:
    - [x] create-service                         Create a service instance
    - [ ] update-service                         Update a service instance
    - [ ] upgrade-service                        Upgrade a service instance to the latest available version of its current service plan
-   - [ ] delete-service                         Delete a service instance
+   - [x] delete-service                         Delete a service instance
    - [ ] rename-service                         Rename a service instance
 
    - [x] create-service-key                     Create key for a service instance

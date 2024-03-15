@@ -62,7 +62,8 @@ def delete_app():
 
 def delete_service():
     service = CloudFoundryService()
-    service.delete(app_name='py-presid-dev', force=True)
+    res = service.delete_service(service_name='py-presid-ups-dev', force=True)
+    print(res)
 
 
 if __name__ == '__main__':
@@ -70,4 +71,5 @@ if __name__ == '__main__':
     # envs()
     # service_keys()
     # create_credentials_file('prd')
-    delete_app()
+    # delete_app()
+    delete_service()

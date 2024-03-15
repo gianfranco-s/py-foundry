@@ -116,8 +116,31 @@ class CloudFoundryService:
 
         return self._call_cf(c)
 
-    def delete_service():
-        """ Not implemented """
+    def delete_service(self, service_name: str, force: bool = False, wait: bool = False) -> str:
+        c = f'cf delete-service {service_name}'
+
+        if wait:
+            c = ' '.join([c, "--wait"])
+
+        if force:
+            c = ' '.join([c, "--force"])
+
+        else:
+            cf_logger.warning(f'Please confirm deletion of service {service_name} [yes/no]')
+            while True:
+                usr_input = input()
+                if usr_input == 'yes':
+                    c = ' '.join([c, "--force"])
+                    break
+
+                elif usr_input == 'no':
+                    return 'aborted'
+
+                else:
+                    cf_logger.info('Valid options: [yes/no]')
+
+        return self._call_cf(c)
+
 
     def service_keys():
         """ Not implemented """
