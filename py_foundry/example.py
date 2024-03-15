@@ -3,6 +3,7 @@ import json
 from py_foundry.lib.getting_started import CloudFoundryStart
 from py_foundry.lib.cf_utils import ServiceKey
 from py_foundry.lib.apps import CloudFoundryApp
+from py_foundry.lib.services import CloudFoundryService
 from py_foundry.lib.methods import get_cf_credentials
 
 API_ENDPOINT = 'https://api.cf.us10.hana.ondemand.com'
@@ -27,29 +28,46 @@ def create_credentials_file(env_name: str) -> str:
     return output_path
 
 
-def main() -> None:
-    org, space = ('dev-cf-aysa', 'default2')
+def session_init_with_credentials() -> None:
     cf_credentials_path = 'cf_creds.json'
-    cf_start = CloudFoundryStart(org, space, API_ENDPOINT, verbose=True)
-    # cf_start.start_session_with_credentials(*get_cf_credentials(cf_credentials_path))
+    cf_start = CloudFoundryStart(org='dev-cf-aysa', space='default2', api_endpoint=API_ENDPOINT, verbose=True)
+    cf_start.start_session_with_credentials(*get_cf_credentials(cf_credentials_path))
+
+
+def session_init_with_token() -> None:
+    cf_start = CloudFoundryStart(org='dev-cf-aysa', space='default2', api_endpoint=API_ENDPOINT, verbose=True)
     cf_start.start_session_with_token()
 
+
+def envs() -> None:
     app = CloudFoundryApp()
-    # print(app.show_apps)
 
-    # res = app.set_env('di-aysa-dev', 'test2', 'helloworld')
-    # print(res)
-
-    res = app.env('di-aysa-dev')
+    res = app.set_env(app_name='di-aysa-dev', variable_name='test2', variable_value='helloworld')
     print(res)
 
-    # sk = ServiceKey('dev-di-hana-hdi')
-    # print(sk.fetch_service_key())
-    # print(sk.fetch_service_key_credentials())
-    # print(sk.create('dev-di-hana-hdi', 'gsalomone-test', None))
-    # print(sk.delete('dev-di-hana-hdi', 'gsalomone-test'))
+    res = app.env(app_name='di-aysa-dev')
+    print(res)
+
+
+def service_keys() -> None:
+    sk = ServiceKey(service_name='dev-di-hana-hdi')
+    print(sk.fetch_service_key())
+    print(sk.fetch_service_key_credentials())
+
+
+def delete_app():
+    app = CloudFoundryApp()
+    app.delete(app_name='py-presid-dev', force=True)
+
+
+def delete_service():
+    service = CloudFoundryService()
+    service.delete(app_name='py-presid-dev', force=True)
 
 
 if __name__ == '__main__':
-    main()
+    session_init_with_token()
+    # envs()
+    # service_keys()
     # create_credentials_file('prd')
+    delete_app()

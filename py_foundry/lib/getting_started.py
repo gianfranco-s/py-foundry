@@ -8,7 +8,7 @@ from typing import Callable, Optional
 
 __timestamp_file = 'last_execution_time.txt'
 TEMPORARY_TOKEN_LENGTH = 32
-DEFAULT_TOKEN_VALIDITY_SECONDS = 4*60*60
+DEFAULT_TOKEN_VALIDITY_SECONDS = 12 * 60 * 60
 
 
 class CloudFoundryAuthenticationError(Exception):

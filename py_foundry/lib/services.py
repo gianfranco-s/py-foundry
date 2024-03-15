@@ -116,6 +116,9 @@ class CloudFoundryService:
 
         return self._call_cf(c)
 
+    def delete_service():
+        """ Not implemented """
+
     def service_keys():
         """ Not implemented """
 
@@ -126,9 +129,6 @@ class CloudFoundryService:
         """ Not implemented """
 
     def update_service():
-        """ Not implemented """
-
-    def delete_service():
         """ Not implemented """
 
     def service():

@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
+from py_foundry.lib.log_config import cf_logger
 from py_foundry.lib.methods import run_command
-
 
 class CloudFoundryAppLifecycleError(Exception):
     pass
@@ -91,6 +91,31 @@ class CloudFoundryApp:
 
         return self._call_cf(c)
 
+    def delete(self, app_name: str, force: bool = False, routes: bool = False) -> str:
+        c = f'cf delete {app_name}'
+
+        if routes:
+            c = ' '.join([c, "-r"])
+
+        if force:
+            c = ' '.join([c, "-f"])
+
+        else:
+            cf_logger.warning(f'Please confirm deletion of app {app_name} [yes/no]')
+            while True:
+                usr_input = input()
+                if usr_input == 'yes':
+                    c = ' '.join([c, "-f"])
+                    break
+
+                elif usr_input == 'no':
+                    return 'aborted'
+
+                else:
+                    cf_logger.info('Valid options: [yes/no]')
+
+        return self._call_cf(c)
+
     def run_task():
         """ Not implemented """
 
@@ -101,9 +126,6 @@ class CloudFoundryApp:
         """ Not implemented """
 
     def app():
-        """ Not implemented """
-
-    def delete():
         """ Not implemented """
 
     def scale():
