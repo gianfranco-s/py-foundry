@@ -3,6 +3,3 @@ __pycache__/
 cf_creds.json
 
 deployments.log
-
-# Timestamp for invalid tokens
-last_execution_time.txt

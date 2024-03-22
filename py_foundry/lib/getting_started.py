@@ -41,11 +41,13 @@ class CloudFoundryStart:
         except CloudFoundryAuthenticationError as e:
             return 'failed'
 
-    def start_session_with_token(self, token_validity_seconds: Optional[int] = None) -> str:
-        if is_token_still_valid(token_validity_seconds):
+    def start_session_with_token(self) -> str:
+        is_token_still_valid = 'FAILED' not in self._call_cf('cf oauth-token')
+        if is_token_still_valid:
             cf_logger.info('Temporary authentication code is still valid')
             return
-        
+
+        # TODO: use `cf login --sso` instead; it has a built-in prompt functionality
         temporary_auth_token_url = self._api_endpoint.replace('https://api', 'https://login', 1) + '/passcode'
         cf_logger.info(f'Get Temporary Authentication code from {temporary_auth_token_url}')
         cf_logger.info('temporary code: ')
@@ -102,20 +104,6 @@ class CloudFoundryStart:
 
         if self._verbose:
             cf_logger.info(f'Setting api endpoint:\n{stdout}')
-
-
-def is_token_still_valid(valid_seconds: int, timestamp_file: str = PY_FOUNDRY_PATH / __timestamp_file) -> bool:
-    valid_seconds = valid_seconds or DEFAULT_TOKEN_VALIDITY_SECONDS
-
-    if not os.path.exists(timestamp_file):
-        return False  # If the file doesn't exist, treat it as the first run
-
-    with open(timestamp_file, 'r') as file:
-        last_execution_time = float(file.read())
-
-    current_time = time.time()
-
-    return current_time - last_execution_time < valid_seconds
 
 
 def create_timestamp_file(timestamp_file: str = __timestamp_file) -> None:
