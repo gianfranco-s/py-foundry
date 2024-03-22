@@ -1,11 +1,9 @@
-import os
 import time
 
-from py_foundry.lib import PY_FOUNDRY_PATH
 from py_foundry.lib.methods import run_command
 from py_foundry.lib.log_config import cf_logger
 
-from typing import Callable, Optional
+from typing import Callable
 
 __timestamp_file = 'last_execution_time.txt'
 TEMPORARY_TOKEN_LENGTH = 32

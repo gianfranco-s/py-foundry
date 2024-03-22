@@ -3,6 +3,7 @@ from typing import Callable, Optional
 from py_foundry.lib.log_config import cf_logger
 from py_foundry.lib.methods import run_command
 
+
 class CloudFoundryAppLifecycleError(Exception):
     pass
 

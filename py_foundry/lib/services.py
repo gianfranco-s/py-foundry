@@ -141,7 +141,6 @@ class CloudFoundryService:
 
         return self._call_cf(c)
 
-
     def service_keys():
         """ Not implemented """
 
