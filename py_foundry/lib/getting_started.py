@@ -44,12 +44,12 @@ class CloudFoundryStart:
     def start_session_with_token(self) -> str:
         is_token_still_valid = 'FAILED' not in self._call_cf('cf oauth-token')
         if is_token_still_valid:
-            cf_logger.info('Temporary authentication code is still valid')
+            self.set_target()
             return
 
         # TODO: use `cf login --sso` instead; it has a built-in prompt functionality
         temporary_auth_token_url = self._api_endpoint.replace('https://api', 'https://login', 1) + '/passcode'
-        cf_logger.info(f'Get Temporary Authentication code from {temporary_auth_token_url}')
+        cf_logger.info(f'Not logged in. Get Temporary Authentication code from {temporary_auth_token_url}')
         cf_logger.info('temporary code: ')
 
         while True:
