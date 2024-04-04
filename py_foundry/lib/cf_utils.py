@@ -65,23 +65,16 @@ class XSUAAService(CloudFoundryService):
     def __init__(self,
                  service_name: str,
                  bound_app_name: str,
-                 xs_security_template_file: str,
+                 json_params: str,
                  service_plan: str = 'application',
                  call_cf: Callable[[str, bool], str] = run_command) -> None:
         super().__init__(call_cf=call_cf)
         self.service_name = service_name
         self.service_type = 'xsuaa'
         self.service_plan = service_plan
-        self._xs_security_template_file = xs_security_template_file
         self.bound_app_name = bound_app_name
 
-        self.json_params = self.set_json_params()
-
-    def set_json_params(self) -> str:
-        with open(self._xs_security_template_file, 'r') as f:
-            place_holder_file = f.read()
-
-        return place_holder_file.replace('APP_NAME_PLACEHOLDER', self.bound_app_name)
+        self.json_params = json_params
 
     def create(self) -> str:
         self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
