@@ -45,7 +45,7 @@ class CloudFoundryApp:
             for var_name, var_value in kwargs.items():
                 c = ' '.join([c, f"\\\n\t--var {var_name}={var_value}"])
 
-        self._call_cf(c)
+        return self._call_cf(c)
 
     def restart(self, app_name: str, strategy: Optional[str], no_wait: bool = False) -> str:
         """Stop all instances of the app, then start them again.

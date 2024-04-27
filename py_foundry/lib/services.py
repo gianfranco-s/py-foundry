@@ -40,7 +40,7 @@ class CloudFoundryService:
                            service_instance: str,
                            service_key: str,
                            json_params: Optional[str],
-                           wait: bool = True):
+                           wait: bool = True) -> str:
         """Create key for a service instance
         Keyword arguments:
         json_params -- json-like parameters.
@@ -61,7 +61,7 @@ class CloudFoundryService:
                            service_instance: str,
                            service_key: str,
                            force: bool = False,
-                           wait: bool = True):
+                           wait: bool = True) -> str:
         """Delete a service key
         Keyword arguments:
         force -- requires confirmation via terminal.
@@ -90,7 +90,7 @@ class CloudFoundryService:
                 else:
                     cf_logger.info('Valid options: [yes/no]')
 
-        self._call_cf(c)
+        return self._call_cf(c)
 
     def create_service(self,
                        service_type: str,

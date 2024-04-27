@@ -72,12 +72,16 @@ class CloudFoundryStart:
             cf_logger.info(f'Logging in with temporary token')
             cf_logger.info(stdout)
 
-    def set_target(self) -> None:
+        return stdout
+
+    def set_target(self) -> str:
         """ Target can be set after initialization. """
         stdout = self._call_cf(f'cf target -o {self.org} -s {self.space}')
 
         if self._verbose:
             cf_logger.info(f'Setting target:\n{stdout}')
+
+        return stdout
 
     def login_with_credentials(self, user: str, password: str) -> None:
         c = f'cf auth {user} {password}'
@@ -96,12 +100,14 @@ class CloudFoundryStart:
         elif 'PASSWORD_LOCKED' in stdout:
             raise CloudFoundryAuthenticationError('Password locked. It usually gets unlocked after 1h.')
 
-    def set_api_endpoint(self) -> None:
+    def set_api_endpoint(self) -> str:
         stdout = self._call_cf(f'cf api {self._api_endpoint}')
         stdout = '\n'.join([stdout, 'CF CLI logs out after setting api endpoint\n'])
 
         if self._verbose:
             cf_logger.info(f'Setting api endpoint:\n{stdout}')
+
+        return stdout
 
 
 def create_timestamp_file(timestamp_file: str = __timestamp_file) -> None:
