@@ -23,6 +23,7 @@ def run_command(command: str, verbose: bool = False, no_call: bool = False) -> s
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, text=True)
 
     if verbose:
+        print(f'\ncommand:\n{command}')
         print(f'stdout:\n{result.stdout}')
         print(f'stderr:\n{result.stderr}')
 
