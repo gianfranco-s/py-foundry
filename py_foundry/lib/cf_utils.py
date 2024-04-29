@@ -77,7 +77,7 @@ class XSUAAService(CloudFoundryService):
         self.json_params = json_params
 
     def create(self) -> str:
-        self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
+        return self.create_service(self.service_type, self.service_plan, self.service_name, self.json_params)
 
 
 class PushAppWithManifest(CloudFoundryApp):
