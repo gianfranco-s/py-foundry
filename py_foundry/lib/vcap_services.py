@@ -34,12 +34,10 @@ def get_vcap(credentials: dict, tables_service_name: str, org: str, space: str, 
 
 def get_vcap_services(org: str,
                       space: str,
-                      env_name: str = 'dev',
-                      output_file_prefix: str = 'hana-env-credentials-{env_name}.env'
+                      tables_service_name: str,
+                      output_filename: str
                       ) -> None:
     cf_logger.info('Fetching env file to deploy objects in SAP BAS')
-
-    tables_service_name = f'{env_name}-di-hana-hdi'
 
     sk = ServiceKey(tables_service_name)
 
@@ -52,5 +50,5 @@ def get_vcap_services(org: str,
 
     vcap_services = f"VCAP_SERVICES='{vcap_json}'"
 
-    with open(output_file_prefix.format(env_name=env_name), 'w') as f:
+    with open(output_filename, 'w') as f:
         f.write(vcap_services)
